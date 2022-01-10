@@ -69,13 +69,6 @@ class DialView @JvmOverloads constructor(
         }
     }
 
-    private fun getFanSpeedColor() = when (fanSpeed) {
-        FanSpeed.OFF -> Color.GRAY
-        FanSpeed.LOW -> fanSpeedLowColor
-        FanSpeed.MEDIUM -> fanSpeedMediumColor
-        FanSpeed.HIGH -> fanSpeedMaxColor
-    }
-
     override fun performClick(): Boolean {
         if (super.performClick()) return true
 
@@ -84,6 +77,13 @@ class DialView @JvmOverloads constructor(
 
         invalidate()
         return true
+    }
+
+    private fun getFanSpeedColor() = when (fanSpeed) {
+        FanSpeed.OFF -> Color.GRAY
+        FanSpeed.LOW -> fanSpeedLowColor
+        FanSpeed.MEDIUM -> fanSpeedMediumColor
+        FanSpeed.HIGH -> fanSpeedMaxColor
     }
 
     private fun PointF.computeXYForSpeed(speed: FanSpeed, radius: Float) {
