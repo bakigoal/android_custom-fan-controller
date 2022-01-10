@@ -8,6 +8,7 @@ import android.graphics.PointF
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.withStyledAttributes
 import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
@@ -31,9 +32,17 @@ class DialView @JvmOverloads constructor(
         textSize = 55.0f
         typeface = Typeface.create("", Typeface.BOLD)
     }
+    private var fanSpeedLowColor = 0
+    private var fanSpeedMediumColor = 0
+    private var fanSpeedMaxColor = 0
 
     init {
         isClickable = true
+        context.withStyledAttributes(attrs, R.styleable.DialView) {
+            fanSpeedLowColor = getColor(R.styleable.DialView_fanColor1, 0)
+            fanSpeedMediumColor = getColor(R.styleable.DialView_fanColor2, 0)
+            fanSpeedMaxColor = getColor(R.styleable.DialView_fanColor3, 0)
+        }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -43,14 +52,14 @@ class DialView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         // Set dial background color to green if selection not off.
-        paint.color = if (fanSpeed == FanSpeed.OFF) Color.GRAY else Color.GREEN
+        paint.color = getFanSpeedColor()
         // Draw the dial.
         canvas.drawCircle((width / 2).toFloat(), (height / 2).toFloat(), radius, paint)
         // Draw the indicator circle.
         val markerRadius = radius + RADIUS_OFFSET_INDICATOR
         pointPosition.computeXYForSpeed(fanSpeed, markerRadius)
         paint.color = Color.BLACK
-        canvas.drawCircle(pointPosition.x, pointPosition.y, radius/12, paint)
+        canvas.drawCircle(pointPosition.x, pointPosition.y, radius / 12, paint)
         // Draw the text labels.
         val labelRadius = radius + RADIUS_OFFSET_LABEL
         FanSpeed.values().forEach { speed ->
@@ -60,8 +69,15 @@ class DialView @JvmOverloads constructor(
         }
     }
 
+    private fun getFanSpeedColor() = when (fanSpeed) {
+        FanSpeed.OFF -> Color.GRAY
+        FanSpeed.LOW -> fanSpeedLowColor
+        FanSpeed.MEDIUM -> fanSpeedMediumColor
+        FanSpeed.HIGH -> fanSpeedMaxColor
+    }
+
     override fun performClick(): Boolean {
-        if( super.performClick()) return true
+        if (super.performClick()) return true
 
         fanSpeed = fanSpeed.next()
         contentDescription = resources.getString(fanSpeed.label)
