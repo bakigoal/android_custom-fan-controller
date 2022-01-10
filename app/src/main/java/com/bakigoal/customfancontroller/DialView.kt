@@ -32,6 +32,10 @@ class DialView @JvmOverloads constructor(
         typeface = Typeface.create("", Typeface.BOLD)
     }
 
+    init {
+        isClickable = true
+    }
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         radius = (min(width, height) / 2.0 * 0.8).toFloat()
     }
@@ -54,6 +58,16 @@ class DialView @JvmOverloads constructor(
             val label = resources.getString(speed.label)
             canvas.drawText(label, pointPosition.x, pointPosition.y, paint)
         }
+    }
+
+    override fun performClick(): Boolean {
+        if( super.performClick()) return true
+
+        fanSpeed = fanSpeed.next()
+        contentDescription = resources.getString(fanSpeed.label)
+
+        invalidate()
+        return true
     }
 
     private fun PointF.computeXYForSpeed(speed: FanSpeed, radius: Float) {
